@@ -2,6 +2,7 @@
 
 
 A discord bot to organize mass channels, roles, and onboarding  
+This is part of the Vertex series made for advanced usage-specific discord bots along with Pyramid and Hexagon
 
 > [!WARNING]  
 > This is still in heavy beta and not ready for pre-release.
