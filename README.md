@@ -1,13 +1,14 @@
-![Valley Beta](https://github.com/user-attachments/assets/e3529054-e226-404d-b85e-4a4bc5c771bd)
-
+<div style="display: flex;" align="center">
+  <img src="https://github.com/user-attachments/assets/e3529054-e226-404d-b85e-4a4bc5c771bd" style="width: 30%; padding: 5%;">
+</div>
 
 A discord bot to organize mass channels, roles, and onboarding  
 This is part of the [Vertex](https://github.com/Boden-C/vertex) series made for advanced usage-specific discord bots along with [Pyramid](https://github.com/Horachepe/DiscordBot) and [Hexagon](https://github.com/Boden-C/hexagon)
 
 <div style="display: flex;" align="center">
-  <img src="https://github.com/user-attachments/assets/7aaeb477-1c95-432a-8988-4b41508b7622" style="width: 20%; padding: 5%;">
-  <img src="https://github.com/user-attachments/assets/7aaeb477-1c95-432a-8988-4b41508b7622" style="width: 20%; padding: 5%;">
-  <img src="https://github.com/user-attachments/assets/7aaeb477-1c95-432a-8988-4b41508b7622" style="width: 20%; padding: 5%;">
+  <img src="https://github.com/user-attachments/assets/13b6586f-ecb3-40ba-9ae4-67dde8846b3f" style="width: 20%; padding: 5%;">
+  <img src="https://github.com/user-attachments/assets/b87de1da-8e45-4d15-82f3-7f5ba70781d7" style="width: 20%; padding: 5%;">
+  <img src="https://github.com/user-attachments/assets/f4cb589d-f0b6-469d-b6d3-54c178e5cd43" style="width: 20%; padding: 5%;">
 </div>
 
 > [!WARNING]  
