@@ -1,17 +1,25 @@
+from datetime import datetime, time as datetime_time
+import random
 import re
 import requests
+import schedule
 import time
 import urllib.parse
 import winsound
 from typing import Optional, Tuple, Dict
 
 REQUEST_HEADERS = """
-replace raw request header here
 """
 
 PAYLOAD = """
-replace raw payload here
 """
+
+MIN = 10
+MAX = 420
+
+START = "08:00"
+END = "23:59"
+
 
 def retry_request(
     url: str,
@@ -103,7 +111,44 @@ def extract_message_and_status(html: str) -> Tuple[Optional[str], Optional[str]]
     return message, status
 
 
+def run_job():
+    global request_url, request_headers, request_cookies, request_data
+    response = retry_request(request_url, request_headers, request_cookies, request_data)
+    if response:
+        message, status = extract_message_and_status(response.text)
+        print(f"Message: {message}")
+        print(f"Status: {status}")
+        if status != "expected":
+            print("UNEXPECTED ERROR!!!!")
+            winsound.Beep(440, 5000)
+            # Optionally clear all scheduled jobs if an unexpected error occurs
+            # schedule.clear()
+    else:
+        print("Request failed after multiple retries.")
+        winsound.Beep(200, 5000)
+        # Optionally clear all scheduled jobs if the request fails
+        # schedule.clear()
+
+
+def run_job():
+    global request_url, request_headers, request_cookies, request_data
+    response = retry_request(request_url, request_headers, request_cookies, request_data)
+    if response:
+        message, status = extract_message_and_status(response.text)
+        print(f"Message: {message}")
+        print(f"Status: {status}")
+        if status != "expected":
+            print("UNEXPECTED ERROR!!!!")
+            winsound.Beep(440, 5000)
+            raise Exception("Unexpected error occurred.")
+    else:
+        print("Request failed after multiple retries.")
+        winsound.Beep(200, 5000)
+        raise Exception("Request failed after multiple retries.")
+
+
 if __name__ == "__main__":
+    print("Parsing Headers and Payload...")
     # Split headers into lines and remove leading/trailing whitespace
     header_lines = REQUEST_HEADERS.strip().split("\n")
 
@@ -144,18 +189,62 @@ if __name__ == "__main__":
     # Convert list values to scalars since each key has one value
     request_data: Dict[str, str] = {k: v[0] for k, v in payload_dict.items()}
 
-    while True:
-        response = retry_request(request_url, request_headers, request_cookies, request_data)
-        if response:
-            message, status = extract_message_and_status(response.text)
-            print(f"Message: {message}")
-            print(f"Status: {status}")
-            if status != "expected":
-                print("UNEXPECTED ERROR!!!!")
-                winsound.Beep(440, 5000)
+    print("Running the job once before scheduling...")
+    run_job()
+
+    start_time_obj: Optional[datetime_time] = None
+    if START is not None:
+        try:
+            start_time_obj = datetime.strptime(START, "%H:%M").time()
+        except ValueError:
+            print("Invalid START time format. Starting immediately.")
+
+    end_time_obj: Optional[datetime_time] = None
+    if END is not None:
+        try:
+            end_time_obj = datetime.strptime(END, "%H:%M").time()
+        except ValueError:
+            print("Invalid END time format. The script will run indefinitely.")
+
+    print("Starting main loop...")
+    if START is not None and start_time_obj:
+        while True:
+            now = datetime.now().time()
+            if now >= start_time_obj:
+                print(f"Start time ({START}) reached.")
                 break
-        else:
-            print("Request failed after multiple retries.")
-            winsound.Beep(200, 5000)
-            break
-        time.sleep(5)
+            else:
+                wait_seconds = (
+                    datetime.combine(datetime.today(), start_time_obj) - datetime.combine(datetime.today(), now)
+                ).total_seconds()
+                if wait_seconds > 0:
+                    wait_time = int(wait_seconds)
+                    hours = wait_time // 3600
+                    minutes = (wait_time % 3600) // 60
+                    seconds = wait_time % 60
+                    fancy_wait_time = ""
+                    if hours > 0:
+                        fancy_wait_time += f"{hours} hr, "
+                    if minutes > 0:
+                        fancy_wait_time += f"{minutes} min, "
+                    fancy_wait_time += f"{seconds} sec"
+                    print(f"Waiting for {fancy_wait_time} until {START}...")
+                    time.sleep(min(wait_seconds, 60))
+                else:
+                    print(f"Start time ({START}) has already passed for today. Starting immediately.")
+                    break
+
+    while True:
+        if end_time_obj:
+            now = datetime.now().time()
+            if now >= end_time_obj:
+                print(f"End time ({END}) reached. Exiting.")
+                break
+
+        run_job()
+
+        r = random.randint(MIN, MAX)
+        print(f"Sleeping for {r} seconds...")
+        time.sleep(r)
+
+    print("Script finished.")
